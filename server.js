@@ -30,6 +30,8 @@ app.post("/api/login", (req, res) => {
   });
 });
 
-app.listen(3000, () => {
-  console.log("Central portal running on http://localhost:3000");
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log(`Central portal running on port ${PORT}`);
 });
