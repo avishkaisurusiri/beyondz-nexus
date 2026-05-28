@@ -19,23 +19,37 @@ const apps = [
   }
 ];
 
-async function login() {
-  const email = document.getElementById("email")?.value;
+let appStatuses = {
+  tuition: "active",
+  shop: "active",
+  salary: "active"
+};
+
+async function register() {
+  const name = document.getElementById("name")?.value.trim();
+  const email = document.getElementById("email")?.value.trim().toLowerCase();
   const password = document.getElementById("password")?.value;
+  const confirmPassword = document.getElementById("confirmPassword")?.value;
   const message = document.getElementById("message");
 
-  if (!email || !password) {
-    message.textContent = "Please enter email and password.";
+  if (!name || !email || !password || !confirmPassword) {
+    message.textContent = "Please fill all fields.";
+    return;
+  }
+
+  if (password !== confirmPassword) {
+    message.textContent = "Passwords do not match.";
     return;
   }
 
   try {
-    const response = await fetch("/api/login", {
+    const response = await fetch("/api/register", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
+        name,
         email,
         password
       })
@@ -44,20 +58,19 @@ async function login() {
     const data = await response.json();
 
     if (!data.success) {
-      message.textContent = "Invalid login.";
+      message.textContent = data.message || "Registration failed.";
       return;
     }
 
-    localStorage.setItem(
-      "centralUser",
-      JSON.stringify(data.user)
-    );
+    message.textContent = "Account created successfully.";
 
-    window.location.href = "dashboard.html";
+    setTimeout(() => {
+      window.location.href = "index.html";
+    }, 1200);
 
   } catch (err) {
     console.error(err);
-    message.textContent = "Login failed.";
+    message.textContent = "Registration failed.";
   }
 }
 
@@ -66,26 +79,13 @@ function logout() {
   window.location.href = "index.html";
 }
 
-function getAppStatuses() {
-  return JSON.parse(localStorage.getItem("appStatuses")) || {
-    tuition: "active",
-    shop: "active",
-    salary: "active"
-  };
-}
-
-function saveAppStatuses(statuses) {
-  localStorage.setItem("appStatuses", JSON.stringify(statuses));
-}
 
 function renderApps() {
   const grid = document.getElementById("appGrid");
   if (!grid) return;
 
-  const statuses = getAppStatuses();
-
   grid.innerHTML = apps.map(app => {
-    const status = statuses[app.id] || "active";
+    const status = appStatuses[app.id] || "active";
 
     if (status === "maintenance") {
       return `
@@ -108,6 +108,7 @@ function renderApps() {
   }).join("");
 }
 
+
 function renderAdminStatusPanel() {
   const box = document.getElementById("adminStatusList");
   const panel = document.querySelector(".admin-panel");
@@ -123,27 +124,70 @@ function renderAdminStatusPanel() {
 
   panel.style.display = "block";
 
-  const statuses = getAppStatuses();
-
   box.innerHTML = apps.map(app => `
     <div class="admin-status-row">
       <strong>${app.title}</strong>
 
       <select onchange="updateAppStatus('${app.id}', this.value)">
-        <option value="active" ${statuses[app.id] === "active" ? "selected" : ""}>Active</option>
-        <option value="maintenance" ${statuses[app.id] === "maintenance" ? "selected" : ""}>Under Maintenance</option>
+        <option value="active" ${appStatuses[app.id] === "active" ? "selected" : ""}>
+          Active
+        </option>
+        <option value="maintenance" ${appStatuses[app.id] === "maintenance" ? "selected" : ""}>
+          Under Maintenance
+        </option>
       </select>
     </div>
   `).join("");
 }
 
-function updateAppStatus(appId, status) {
-  const statuses = getAppStatuses();
-  statuses[appId] = status;
-  saveAppStatuses(statuses);
+async function updateAppStatus(appId, status) {
+  try {
+    const response = await fetch(`/api/app-statuses/${appId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      credentials: "include",
+      body: JSON.stringify({ status })
+    });
 
-  renderApps();
-  renderAdminStatusPanel();
+    const data = await response.json();
+
+    if (!data.success) {
+      alert(data.message || "Failed to update app status.");
+      return;
+    }
+
+    appStatuses[appId] = data.app.status;
+
+    renderApps();
+    renderAdminStatusPanel();
+
+  } catch (err) {
+    console.error(err);
+    alert("Failed to update app status.");
+  }
+}
+
+async function loadAppStatuses() {
+  try {
+    const response = await fetch("/api/app-statuses", {
+      credentials: "include"
+    });
+
+    const data = await response.json();
+
+    if (!data.success) {
+      return;
+    }
+
+    data.statuses.forEach(item => {
+      appStatuses[item.app_id] = item.status;
+    });
+
+  } catch (err) {
+    console.error("Failed to load app statuses:", err);
+  }
 }
 
 if (window.location.pathname.includes("dashboard.html")) {
@@ -153,16 +197,10 @@ if (window.location.pathname.includes("dashboard.html")) {
     window.location.href = "index.html";
   }
 
-  renderApps();
-  renderAdminStatusPanel();
-}
-
-function getRegisteredUsers() {
-  return JSON.parse(localStorage.getItem("registeredUsers")) || [];
-}
-
-function saveRegisteredUsers(users) {
-  localStorage.setItem("registeredUsers", JSON.stringify(users));
+  loadAppStatuses().then(() => {
+    renderApps();
+    renderAdminStatusPanel();
+  });
 }
 
 function register() {
