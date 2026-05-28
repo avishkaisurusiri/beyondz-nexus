@@ -39,6 +39,9 @@ app.use(cors({
 
 app.use(express.json());
 app.use(cookieParser());
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "dashboard.html"));
+});
 app.use(express.static(path.join(__dirname, "public")));
 
 function createToken(user) {
