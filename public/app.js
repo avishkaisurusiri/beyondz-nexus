@@ -74,6 +74,53 @@ async function register() {
   }
 }
 
+async function login() {
+  const email = document.getElementById("email")?.value.trim().toLowerCase();
+  const password = document.getElementById("password")?.value;
+  const message = document.getElementById("message");
+
+  if (!email || !password) {
+    message.textContent = "Please enter email and password.";
+    return;
+  }
+
+  try {
+    const response = await fetch("/api/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      credentials: "include",
+      body: JSON.stringify({
+        email,
+        password
+      })
+    });
+
+    const data = await response.json();
+
+    if (!data.success) {
+      message.textContent = data.message || "Login failed.";
+      return;
+    }
+
+    localStorage.setItem(
+      "centralUser",
+      JSON.stringify(data.user)
+    );
+
+    message.textContent = "Login successful.";
+
+    setTimeout(() => {
+      window.location.href = "dashboard.html";
+    }, 1000);
+
+  } catch (err) {
+    console.error(err);
+    message.textContent = "Login failed.";
+  }
+}
+
 function logout() {
   localStorage.removeItem("centralUser");
   window.location.href = "index.html";
