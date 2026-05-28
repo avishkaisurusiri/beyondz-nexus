@@ -3,25 +3,19 @@ const apps = [
     id: "tuition",
     title: "Tuition Platform",
     description: "Manage lessons, students, quizzes and exams.",
-    url: "https://academy-website-nvkh.onrender.com/",
-    loginUrl: "https://academy-website-nvkh.onrender.com/",
-    registerUrl: "https://academy-website-nvkh.onrender.com/"
+    url: "https://academy-website-nvkh.onrender.com/"
   },
   {
     id: "shop",
     title: "E-commerce Store",
     description: "Manage products, orders, payments and customers.",
-    url: "https://factory-sales-website.onrender.com/shop.html",
-    loginUrl: "https://factory-sales-website.onrender.com/login.html",
-    registerUrl: "https://factory-sales-website.onrender.com/register.html"
+    url: "https://factory-sales-website.onrender.com/shop.html"
   },
   {
     id: "salary",
     title: "Salary Manager",
     description: "Track income, expenses, savings and future plans.",
-    url: "https://investment-management-o8z5.onrender.com",
-    loginUrl: "https://investment-management-o8z5.onrender.com",
-    registerUrl: "https://investment-management-o8z5.onrender.com"
+    url: "https://investment-management-o8z5.onrender.com"
   }
 ];
 
@@ -245,11 +239,6 @@ async function loadAppStatuses() {
 
 if (window.location.pathname.includes("dashboard.html")) {
   const user = localStorage.getItem("centralUser");
-
-  if (!user) {
-    window.location.href = "index.html";
-  }
-
   loadAppStatuses().then(() => {
     renderApps();
     renderAdminStatusPanel();
