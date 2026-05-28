@@ -310,3 +310,25 @@ button:hover {
   color: #70819d;
   letter-spacing: 0.4px;
 }
+
+.top-auth-actions {
+  display: flex;
+  gap: 14px;
+  margin: 24px 0 36px;
+  flex-wrap: wrap;
+}
+
+.top-auth-btn {
+  text-decoration: none;
+  padding: 12px 22px;
+  border-radius: 14px;
+  font-weight: 700;
+  color: #38bdf8;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+}
+
+.top-auth-btn.primary {
+  color: white;
+  background: linear-gradient(135deg, #2f66f3, #7c3aed);
+  border: none;
+}
