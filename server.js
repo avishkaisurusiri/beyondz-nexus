@@ -249,3 +249,20 @@ app.put("/api/app-statuses/:appId", requireAuth, requireAdmin, async (req, res) 
 app.listen(PORT, () => {
   console.log(`BeyondZ Nexus running on port ${PORT}`);
 });
+
+app.get("/api/db-test", async (req, res) => {
+  try {
+    const result = await pool.query("SELECT NOW()");
+    res.json({
+      success: true,
+      time: result.rows[0]
+    });
+  } catch (err) {
+    console.error(err);
+
+    res.status(500).json({
+      success: false,
+      error: err.message
+    });
+  }
+});
