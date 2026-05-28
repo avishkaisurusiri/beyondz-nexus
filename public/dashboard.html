@@ -5,22 +5,36 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <header class="topbar">
-    <h2>Central Portal</h2>
-    <button onclick="logout()">Logout</button>
-  </header>
+<header class="topbar">
+  <div>
+    <h2>BeyondZ Nexus</h2>
+    <p>Your central gateway to all connected platforms</p>
+  </div>
 
-  <main class="dashboard">
-    <h1>Welcome back</h1>
-    <p>Select a platform to continue</p>
+  <div class="top-actions">
+    <a href="index.html" class="top-auth-btn">Login</a>
+    <a href="register.html" class="top-auth-btn primary">Register</a>
+  </div>
+</header>
 
-    <div class="app-grid" id="appGrid"></div>
+<main class="dashboard">
+  <section class="hero-section">
+    <span class="portal-label">Central Portal</span>
+    <h1>Access your platforms in one place</h1>
+    <p>
+      Choose a platform below and continue with its current login or registration process.
+      A single BeyondZ login can be connected later.
+    </p>
+  </section>
 
-<section class="admin-panel">
-  <h2>Admin App Status</h2>
-  <div id="adminStatusList"></div>
-</section>
-  </main>
+  <div class="app-grid" id="appGrid"></div>
+
+  <section class="admin-panel">
+    <h2>Admin Platform Controls</h2>
+    <p>Manage platform availability and maintenance status.</p>
+    <div id="adminStatusList"></div>
+  </section>
+</main>
 
   <script src="app.js"></script>
 </body>

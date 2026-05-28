@@ -2,19 +2,19 @@ const apps = [
   {
     id: "tuition",
     title: "Tuition Platform",
-    description: "Manage lessons, students, quizzes and exams.",
+    description: "Access lessons, quizzes, exams and student learning resources.",
     url: "https://academy-website-nvkh.onrender.com/"
   },
   {
     id: "shop",
     title: "E-commerce Store",
-    description: "Manage products, orders, payments and customers.",
+    description: "Browse products, place orders and manage your purchases.",
     url: "https://factory-sales-website.onrender.com/shop.html"
   },
   {
     id: "salary",
     title: "Salary Manager",
-    description: "Track income, expenses, savings and future plans.",
+    description: "Plan income, expenses, savings and financial goals.",
     url: "https://investment-management-o8z5.onrender.com"
   }
 ];

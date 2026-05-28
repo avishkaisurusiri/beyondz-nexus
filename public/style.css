@@ -332,3 +332,40 @@ button:hover {
   background: linear-gradient(135deg, #2f66f3, #7c3aed);
   border: none;
 }
+.topbar p {
+  margin: 4px 0 0;
+  color: #94a3b8;
+  font-size: 14px;
+}
+
+.top-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.hero-section {
+  max-width: 760px;
+  margin-bottom: 36px;
+}
+
+.portal-label {
+  display: inline-block;
+  margin-bottom: 14px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  color: #38bdf8;
+  background: rgba(56, 189, 248, 0.1);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  font-weight: 800;
+}
+
+.hero-section h1 {
+  margin: 0 0 14px;
+}
+
+.hero-section p {
+  color: #b7c5dc;
+  font-size: 19px;
+  line-height: 1.6;
+}
