@@ -237,8 +237,11 @@ async function loadAppStatuses() {
   }
 }
 
-if (window.location.pathname.includes("dashboard.html")) {
-  const user = localStorage.getItem("centralUser");
+const isDashboardPage =
+  window.location.pathname === "/" ||
+  window.location.pathname.includes("dashboard.html");
+
+if (isDashboardPage) {
   loadAppStatuses().then(() => {
     renderApps();
     renderAdminStatusPanel();
