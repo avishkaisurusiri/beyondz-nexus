@@ -213,7 +213,7 @@ app.post("/api/logout", (req, res) => {
   res.json({ success: true });
 });
 
-app.get("/api/app-statuses", requireAuth, async (req, res) => {
+app.get("/api/app-statuses", async (req, res) => {
   const result = await pool.query(
     "SELECT app_id, app_name, status FROM app_statuses ORDER BY id"
   );
