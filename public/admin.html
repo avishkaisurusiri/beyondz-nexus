@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin | BeyondZ Nexus</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<header class="topbar">
+  <div>
+    <h2>BeyondZ Nexus Admin</h2>
+    <p>Manage portal websites</p>
+  </div>
+
+  <div class="top-actions">
+    <a href="dashboard.html" class="top-auth-btn">Back to Portal</a>
+  </div>
+</header>
+
+<main class="dashboard">
+  <section class="admin-panel">
+    <h2>Admin Platform Controls</h2>
+    <p>Add new websites and manage platform availability.</p>
+
+    <div class="admin-add-form">
+      <input id="newAppTitle" placeholder="Website name" />
+      <input id="newAppUrl" placeholder="Website link / URL" />
+      <textarea id="newAppDescription" placeholder="Short description"></textarea>
+      <button onclick="addPortalApp()">Add Website</button>
+    </div>
+
+    <div id="adminStatusList"></div>
+  </section>
+</main>
+
+<script src="app.js"></script>
+</body>
+</html>

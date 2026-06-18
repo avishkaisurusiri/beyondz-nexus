@@ -42,6 +42,9 @@ app.use(cookieParser());
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "dashboard.html"));
 });
+app.get("/admin.html", requireAuth, requireAdmin, (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "admin.html"));
+});
 app.use(express.static(path.join(__dirname, "public")));
 
 function createToken(user) {
@@ -309,10 +312,6 @@ app.put("/api/app-statuses/:appId", requireAuth, requireAdmin, async (req, res) 
   });
 });
 
-app.listen(PORT, () => {
-  console.log(`BeyondZ Nexus running on port ${PORT}`);
-});
-
 app.get("/api/db-test", async (req, res) => {
   try {
     const result = await pool.query("SELECT NOW()");
@@ -329,3 +328,8 @@ app.get("/api/db-test", async (req, res) => {
     });
   }
 });
+
+app.listen(PORT, () => {
+  console.log(`BeyondZ Nexus running on port ${PORT}`);
+});
+

@@ -11,10 +11,14 @@
     <p>Your central gateway to all connected platforms</p>
   </div>
 
-  <div class="top-actions">
-    <a href="index.html" class="top-auth-btn">Login</a>
-    <a href="register.html" class="top-auth-btn primary">Register</a>
-  </div>
+ <div class="top-actions">
+  <a href="admin.html" id="adminLink" class="top-auth-btn" style="display:none;">
+    Admin Panel
+  </a>
+
+  <a href="index.html" class="top-auth-btn">Login</a>
+  <a href="register.html" class="top-auth-btn primary">Register</a>
+</div> 
 </header>
 
 <main class="dashboard">
@@ -29,19 +33,6 @@
 
   <div class="app-grid" id="appGrid"></div>
 
-  <section class="admin-panel">
-  <h2>Admin Platform Controls</h2>
-  <p>Add new websites and manage platform availability.</p>
-
-  <div class="admin-add-form">
-    <input id="newAppTitle" placeholder="Website name" />
-    <input id="newAppUrl" placeholder="Website link / URL" />
-    <textarea id="newAppDescription" placeholder="Short description"></textarea>
-    <button onclick="addPortalApp()">Add Website</button>
-  </div>
-
-  <div id="adminStatusList"></div>
-</section>
 </main>
 
   <script src="app.js"></script>

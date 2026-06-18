@@ -264,24 +264,14 @@ async function deletePortalApp(appId) {
 }
 
 
-async function loadAppStatuses() {
-  try {
-    const response = await fetch("/api/app-statuses", {
-      credentials: "include"
-    });
+function showAdminLinkIfAdmin() {
+  const adminLink = document.getElementById("adminLink");
+  if (!adminLink) return;
 
-    const data = await response.json();
+  const user = JSON.parse(localStorage.getItem("centralUser") || "{}");
 
-    if (!data.success) {
-      return;
-    }
-
-    data.statuses.forEach(item => {
-      appStatuses[item.app_id] = item.status;
-    });
-
-  } catch (err) {
-    console.error("Failed to load app statuses:", err);
+  if (user.isAdmin) {
+    adminLink.style.display = "inline-block";
   }
 }
 
@@ -289,9 +279,19 @@ const isDashboardPage =
   window.location.pathname === "/" ||
   window.location.pathname.includes("dashboard.html");
 
-if (isDashboardPage) {
+const isAdminPage =
+  window.location.pathname.includes("admin.html");
+
+if (isDashboardPage || isAdminPage) {
   loadPortalApps().then(() => {
     renderApps();
-    renderAdminStatusPanel();
+
+    if (isDashboardPage) {
+      showAdminLinkIfAdmin();
+    }
+
+    if (isAdminPage) {
+      renderAdminStatusPanel();
+    }
   });
 }
