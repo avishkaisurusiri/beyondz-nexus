@@ -30,10 +30,18 @@
   <div class="app-grid" id="appGrid"></div>
 
   <section class="admin-panel">
-    <h2>Admin Platform Controls</h2>
-    <p>Manage platform availability and maintenance status.</p>
-    <div id="adminStatusList"></div>
-  </section>
+  <h2>Admin Platform Controls</h2>
+  <p>Add new websites and manage platform availability.</p>
+
+  <div class="admin-add-form">
+    <input id="newAppTitle" placeholder="Website name" />
+    <input id="newAppUrl" placeholder="Website link / URL" />
+    <textarea id="newAppDescription" placeholder="Short description"></textarea>
+    <button onclick="addPortalApp()">Add Website</button>
+  </div>
+
+  <div id="adminStatusList"></div>
+</section>
 </main>
 
   <script src="app.js"></script>

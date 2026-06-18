@@ -1,29 +1,13 @@
-const apps = [
-  {
-    id: "tuition",
-    title: "Tuition Platform",
-    description: "Access lessons, quizzes, exams and student learning resources.",
-    url: "https://academy-website-nvkh.onrender.com/"
-  },
-  {
-    id: "shop",
-    title: "E-commerce Store",
-    description: "Browse products, place orders and manage your purchases.",
-    url: "https://factory-sales-website.onrender.com/shop.html"
-  },
-  {
-    id: "salary",
-    title: "Salary Manager",
-    description: "Plan income, expenses, savings and financial goals.",
-    url: "https://investment-management-o8z5.onrender.com"
-  }
-];
+let apps = [];
 
-let appStatuses = {
-  tuition: "active",
-  shop: "active",
-  salary: "active"
-};
+function escapeHtml(value) {
+  return String(value || "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
 
 async function register() {
   const name = document.getElementById("name")?.value.trim();
@@ -132,13 +116,11 @@ function renderApps() {
   if (!grid) return;
 
   grid.innerHTML = apps.map(app => {
-    const status = appStatuses[app.id] || "active";
-
-    if (status === "maintenance") {
+    if (app.status === "maintenance") {
       return `
         <div class="app-card">
-          <h3>${app.title}</h3>
-          <p>${app.description}</p>
+          <h3>${escapeHtml(app.title)}</h3>
+          <p>${escapeHtml(app.description)}</p>
           <div class="maintenance-box">
             This website is currently under maintenance. Please try again later.
           </div>
@@ -147,9 +129,9 @@ function renderApps() {
     }
 
     return `
-      <a class="app-card" href="${app.url}">
-        <h3>${app.title}</h3>
-        <p>${app.description}</p>
+      <a class="app-card" href="${escapeHtml(app.url)}" target="_blank">
+        <h3>${escapeHtml(app.title)}</h3>
+        <p>${escapeHtml(app.description)}</p>
       </a>
     `;
   }).join("");
@@ -173,48 +155,114 @@ function renderAdminStatusPanel() {
 
   box.innerHTML = apps.map(app => `
     <div class="admin-status-row">
-      <strong>${app.title}</strong>
+      <div>
+        <strong>${escapeHtml(app.title)}</strong>
+        <p>${escapeHtml(app.url)}</p>
+      </div>
 
       <select onchange="updateAppStatus('${app.id}', this.value)">
-        <option value="active" ${appStatuses[app.id] === "active" ? "selected" : ""}>
-          Active
-        </option>
-        <option value="maintenance" ${appStatuses[app.id] === "maintenance" ? "selected" : ""}>
-          Under Maintenance
-        </option>
+        <option value="active" ${app.status === "active" ? "selected" : ""}>Active</option>
+        <option value="maintenance" ${app.status === "maintenance" ? "selected" : ""}>Under Maintenance</option>
       </select>
+
+      <button onclick="deletePortalApp('${app.id}')">Remove</button>
     </div>
   `).join("");
 }
 
-async function updateAppStatus(appId, status) {
+async function loadPortalApps() {
   try {
-    const response = await fetch(`/api/app-statuses/${appId}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      credentials: "include",
-      body: JSON.stringify({ status })
+    const response = await fetch("/api/portal-apps", {
+      credentials: "include"
     });
 
     const data = await response.json();
 
-    if (!data.success) {
-      alert(data.message || "Failed to update app status.");
-      return;
-    }
+    if (!data.success) return;
 
-    appStatuses[appId] = data.app.status;
-
-    renderApps();
-    renderAdminStatusPanel();
-
+    apps = data.apps;
   } catch (err) {
-    console.error(err);
-    alert("Failed to update app status.");
+    console.error("Failed to load portal apps:", err);
   }
 }
+
+async function addPortalApp() {
+  const title = document.getElementById("newAppTitle")?.value.trim();
+  const url = document.getElementById("newAppUrl")?.value.trim();
+  const description = document.getElementById("newAppDescription")?.value.trim();
+
+  if (!title || !url) {
+    alert("Website name and link are required.");
+    return;
+  }
+
+  const response = await fetch("/api/portal-apps", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    credentials: "include",
+    body: JSON.stringify({ title, url, description })
+  });
+
+  const data = await response.json();
+
+  if (!data.success) {
+    alert(data.message || "Failed to add website.");
+    return;
+  }
+
+  document.getElementById("newAppTitle").value = "";
+  document.getElementById("newAppUrl").value = "";
+  document.getElementById("newAppDescription").value = "";
+
+  await loadPortalApps();
+  renderApps();
+  renderAdminStatusPanel();
+}
+
+async function updateAppStatus(appId, status) {
+  const response = await fetch(`/api/portal-apps/${appId}/status`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    credentials: "include",
+    body: JSON.stringify({ status })
+  });
+
+  const data = await response.json();
+
+  if (!data.success) {
+    alert(data.message || "Failed to update status.");
+    return;
+  }
+
+  await loadPortalApps();
+  renderApps();
+  renderAdminStatusPanel();
+}
+
+async function deletePortalApp(appId) {
+  if (!confirm("Remove this website from the portal?")) return;
+
+  const response = await fetch(`/api/portal-apps/${appId}`, {
+    method: "DELETE",
+    credentials: "include"
+  });
+
+  const data = await response.json();
+
+  if (!data.success) {
+    alert(data.message || "Failed to remove website.");
+    return;
+  }
+
+  await loadPortalApps();
+  renderApps();
+  renderAdminStatusPanel();
+}
+
 
 async function loadAppStatuses() {
   try {
@@ -242,7 +290,7 @@ const isDashboardPage =
   window.location.pathname.includes("dashboard.html");
 
 if (isDashboardPage) {
-  loadAppStatuses().then(() => {
+  loadPortalApps().then(() => {
     renderApps();
     renderAdminStatusPanel();
   });

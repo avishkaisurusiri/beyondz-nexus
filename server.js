@@ -195,6 +195,66 @@ app.post("/api/login", async (req, res) => {
   }
 });
 
+app.get("/api/portal-apps", async (req, res) => {
+  const result = await pool.query(
+    "SELECT * FROM portal_apps ORDER BY id ASC"
+  );
+
+  res.json({
+    success: true,
+    apps: result.rows
+  });
+});
+
+app.post("/api/portal-apps", requireAuth, requireAdmin, async (req, res) => {
+  const { title, description, url } = req.body;
+
+  if (!title || !url) {
+    return res.json({
+      success: false,
+      message: "Website name and link are required."
+    });
+  }
+
+  const result = await pool.query(
+    `INSERT INTO portal_apps (title, description, url, status)
+     VALUES ($1, $2, $3, 'active')
+     RETURNING *`,
+    [title, description || "", url]
+  );
+
+  res.json({
+    success: true,
+    app: result.rows[0]
+  });
+});
+
+app.put("/api/portal-apps/:id/status", requireAuth, requireAdmin, async (req, res) => {
+  const { status } = req.body;
+
+  const result = await pool.query(
+    `UPDATE portal_apps
+     SET status = $1
+     WHERE id = $2
+     RETURNING *`,
+    [status, req.params.id]
+  );
+
+  res.json({
+    success: true,
+    app: result.rows[0]
+  });
+});
+
+app.delete("/api/portal-apps/:id", requireAuth, requireAdmin, async (req, res) => {
+  await pool.query(
+    "DELETE FROM portal_apps WHERE id = $1",
+    [req.params.id]
+  );
+
+  res.json({ success: true });
+});
+
 app.get("/api/me", requireAuth, async (req, res) => {
   res.json({
     success: true,
