@@ -105,9 +105,18 @@ async function login() {
   }
 }
 
-function logout() {
+async function logout() {
+  try {
+    await fetch("/api/logout", {
+      method: "POST",
+      credentials: "include"
+    });
+  } catch (err) {
+    console.error("Logout failed:", err);
+  }
+
   localStorage.removeItem("centralUser");
-  window.location.href = "index.html";
+  window.location.href = "dashboard.html";
 }
 
 
@@ -264,14 +273,35 @@ async function deletePortalApp(appId) {
 }
 
 
-function showAdminLinkIfAdmin() {
+async function updateTopActions() {
   const adminLink = document.getElementById("adminLink");
-  if (!adminLink) return;
+  const loginLink = document.getElementById("loginLink");
+  const registerLink = document.getElementById("registerLink");
+  const logoutBtn = document.getElementById("logoutBtn");
 
-  const user = JSON.parse(localStorage.getItem("centralUser") || "{}");
+  if (adminLink) adminLink.style.display = "none";
+  if (logoutBtn) logoutBtn.style.display = "none";
+  if (loginLink) loginLink.style.display = "inline-block";
+  if (registerLink) registerLink.style.display = "inline-block";
 
-  if (user.isAdmin) {
-    adminLink.style.display = "inline-block";
+  try {
+    const response = await fetch("/api/me", {
+      credentials: "include"
+    });
+
+    const data = await response.json();
+
+    if (!data.success) return;
+
+    if (loginLink) loginLink.style.display = "none";
+    if (registerLink) registerLink.style.display = "none";
+    if (logoutBtn) logoutBtn.style.display = "inline-block";
+
+    if (data.user?.isAdmin && adminLink) {
+      adminLink.style.display = "inline-block";
+    }
+  } catch (err) {
+    console.error("User check failed:", err);
   }
 }
 
@@ -283,11 +313,11 @@ const isAdminPage =
   window.location.pathname.includes("admin.html");
 
 if (isDashboardPage || isAdminPage) {
-  loadPortalApps().then(() => {
+  loadPortalApps().then(async () => {
     renderApps();
 
     if (isDashboardPage) {
-      showAdminLinkIfAdmin();
+      await updateTopActions();
     }
 
     if (isAdminPage) {
