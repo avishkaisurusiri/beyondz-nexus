@@ -1,4 +1,8 @@
 require("dotenv").config({ path: "./.env" });
+require("dotenv").config();
+
+const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
+
 
 const express = require("express");
 const path = require("path");
